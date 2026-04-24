@@ -1,0 +1,333 @@
+
+<!Doctype html>
+<html lang="en">
+<head>
+    <meta charser="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.1">
+    <title>Browser Privacity Audit | InfoSec Project</title>
+
+    <style>
+        /* Resete basico*/
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, Helvetica, sans-serif;
+            /* font family: 'Courier New', Courier, monospace; <--- me arrepenti, se veia feo */
+            background: #101010;
+            color: #eeeeee;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .intro {
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #333;
+        }
+
+        .intro h1 {
+            margin: 0;
+            font-size: 30px;
+            color: #d7ff4f;
+        }
+
+        .intro p {
+            color: #b0b8b8;
+            max-width: 720px;
+            margin-top: 10px;
+        }
+
+        /* Caja de advertencia */
+        .note {
+            background: #181818;
+            border-left: 4px solid #f2c94c;
+            padding: 14px;
+            margin-top: 15px;
+            color: #dcdcdc;
+            font-size: 14px;
+        }
+
+        .card {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            /* box-shadow: 0 4px 8px rgba(0,0,0,0.5); probando sombra pero no me convence*/
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #f2c94c;
+            font-size: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #d7ff4f;
+            color: #111;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #c9ef43;
+        }
+
+        button:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .score-area {
+            text-align: center;
+        }
+
+        #score {
+            font-size: 52px;
+            font-weight: bold;
+            font-family: monospace;
+            margin: 8px 0;
+        }
+
+        .small {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* grid para que se acomode padre en el celular */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding-bottom: 9px;
+            margin-bottom: 11px;
+            border-bottom: 1px solid #2c2c2c;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .label {
+            color: #9c9c9c;
+        }
+        .value {
+            color: #00ff9d;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .danger {
+            color: #ff6b6b;
+        }
+
+        pre {
+            background: #080808;
+            color: #00ff9d;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        u1 {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: #dddddd;
+        }
+
+        li strong {
+            color: #d7ff4f;
+        }
+
+        footer {
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+    </style>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</head>
+
+<body>
+    <div class="container">
+
+        <section class="intro">
+            <h1>Browser Privacity Audit</h1>
+
+            <p>
+                I made this project to see much information a normal website can read
+                from a browser. It does not attack anything or break into anything. It only
+                collects basic data that browsers usually expose to websites.
+            </p>
+
+            <div class="note">
+                This is for learning and awareness. The point is to understand browser
+                fingerprinting and how tracking can work even without cookies.
+            </div>
+        </section>
+
+        <section class="card">
+            <button id="btnScan">Run browser audit"</button>
+        </section>
+
+        <section calss="card score-area">
+            <h2>Tracking Risk Score</h2>
+            <div id="score">--</div>
+            <p class="small">
+                A higher score means your browser gives away more useful tracking signals.
+            </p>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <h2>Device Information</h2>
+
+                <div class="row">
+                    <span class="label">Platform:</span>
+                    <span class="value" id="platform">waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">CPU cores:</span>
+                    <spam class="value" id="cores">waiting...</spam>
+                </div>
+
+                <div class="row">
+                    <span class="label">Screen size:</span>
+                    <span class="value" id="screenSize">Waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Battery:</span>
+                    <span class="value" id="battery">waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Timezone:</span>
+                    <span class="value" id="timezone">waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Public IP:</span>
+                    <span class="vale danger" id="ip">waiting...</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Browser Signals</h2>
+
+                <div class="row">
+                    <span class="label">Do Not Track:</span>
+                    <span class="value" id="dnt">waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Ad Blocker:</span>
+                    <span class="value" id="adblock">waiting...</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Canvas hash:</span>
+                    <span class="value" id="canvasHash">waitting...</span>
+                </div>
+
+                <canvas id="testCanvas" width="220" height="60" style="display:none;"></canvas>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Raw Example Data</h2>
+            <p class="small">
+                This is the kind of data a tracking script could send to a server.
+            </p>
+
+            <pre id="rawData">// run the audit to show data</pre>
+        </section>
+
+        <section class="card">
+            <h2>How to Project Yourself</h2>
+            <ul>
+                <li>
+                    <strong>Use a privacy-focused browser:</strong>
+                    Firefox with strick tracking protection or Brave can reduce a lot of tracking.
+            </li>
+            </li>
+               <strong>Install uBlock Origin:</strong>
+               This blocks many ads, trackers, and suspicius scripts before they load.
+        </li>
+        <li>
+            <strong>Do not install random extensions:</strong>
+            Extensions can make your browser more unique and sometimes collect data too.
+        </li>
+        <li>
+            <strong>Use a trusted VPN when needed:</strong>
+            A VPN can hide your IP from website, but it does not make you fully anonymus.
+        </li>
+        <li>
+            <strong>Keep your browser updated:</strong>
+            Old browsers can have privacy problems and security bugs.
+        </li>
+      </ul>
+    </section>
+
+    
