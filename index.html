@@ -1,4 +1,3 @@
-
 <!Doctype html>
 <html lang="en">
 <head>
@@ -330,4 +329,109 @@
       </ul>
     </section>
 
-    
+    <section class="card">
+        <h2>Disadvantages and Possible Attacks</h2>
+        <ul>
+            <li>
+                <strong>Fingerprinting:</strong>
+                Website can combine your screen size, timezone, plataform, canvas rendering,
+                and other details to recognize your browser again.
+            </li>
+            <li>
+                <strong>IP tracking:</strong>
+                Your public IP can reveal your internet provider and approximate location.
+            </li>
+            </li>
+               <strong>Extension tracking:</strong>
+               Some browser extensions can collect browsing behavior if they are not trustworthy.
+            </li>
+            <li>
+                <strong>Canvas fingerprinting:</strong>
+                Small diferences in graphics rendering can create a unique browser signature.
+            </li>
+        </ul>
+      </section>
+
+      <footer>
+        Student cybersecurity project - made for learning, not for attacking.
+      </footer>
+
+    </div>
+
+    <script>
+        let scanBtn = document.getElementById("btnScan");
+        // console.log("boton cargado"), scanBtn); // debug
+
+        // helper para hashear el canvas (adaptado de stackoverflow para que sea legible)
+        async function crearHash(text) {
+            let encoded = new TextEncoder().encode(text);
+            let hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+            let hashArray = Array.from(new Uint8Array(hashBuffer));
+
+            return hashArray
+              .map(byte => byte.toString(16).padStart(2, "0"))
+              .join("");
+        }
+
+        // dirty adblock check - intenta cargar un script ads de google
+        async function checkAdBlocker() {
+            try {
+                await fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
+                    method: "HEAD",
+                    mode: "no-cors"
+                });
+
+                // console.log("no hay adblock");
+                return "Not detected";
+            } catch (error) {
+              // si el fetch trunea, seguro es por la extension xD
+              console.warn("adblock bloqueando script de google");
+              return "Probably active";
+            }
+        }
+
+        async function getPublicIp() {
+          try {
+            let response = await fetch("https://api.ipify.org?format=json");
+            let data = await response.json();
+            return data.ip;
+          } catch (error) {
+            console.warn("No se pudo sacar la IP:", error);
+            return "Blocked or unvailable";
+          }
+        }
+
+        async function getBaterryStatuts() {
+          if (!navigator.getBattery) {
+            return "Not supported";
+          }
+
+          try {
+            let battery = await navigator.getBattery();
+            let percent = Math.round(battery.level * 100);
+            let chargingText = battery.charging ? "charging" : "not charging";
+            return `${percent}% (${chargingText})`;
+          } catch (error) {
+            console.log("error leyendo bateria");
+            return "Could not read";
+          }
+        }
+
+        async function getCanvasFingerprint() {
+            const canvas = document.getElementById("testCanvas");
+            const ctx = canvas.getContext("2d");
+
+            // dibujo figuras y texto random. diferentes GPUs/SO van a renderizar esto un poco distinto
+            ctx.fillStyle = "#101010";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#d7ff4f";
+            ctx.fillText("browser audit", 12, 25);
+            ctx.fillText("canvas fp text", 14, 45);
+            
+            let canvasData = canvas.toDataURL();
+            return await crearHash(canvasData);
+        }
+
+        function calculateRiskScore(data) {}
