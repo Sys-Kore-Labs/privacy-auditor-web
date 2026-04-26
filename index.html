@@ -1,9 +1,9 @@
 <!Doctype html>
 <html lang="en">
 <head>
-    <meta charser="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.1">
-    <title>Browser Privacity Audit | InfoSec Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Privacy Audit | InfoSec Project</title>
 
     <style>
         /* Resete basico*/
@@ -147,7 +147,7 @@
             font-size: 13px;
         }
 
-        u1 {
+        ul {
             padding-left: 20px;
         }
 
@@ -167,51 +167,13 @@
             margin-top: 30px;
         }
     </style>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </head>
 
 <body>
     <div class="container">
 
         <section class="intro">
-            <h1>Browser Privacity Audit</h1>
+            <h1>Browser Privacy Audit</h1>
 
             <p>
                 I made this project to see much information a normal website can read
@@ -226,10 +188,10 @@
         </section>
 
         <section class="card">
-            <button id="btnScan">Run browser audit"</button>
+            <button id="btnScan">Run browser audit</button>
         </section>
 
-        <section calss="card score-area">
+        <section class="card score-area">
             <h2>Tracking Risk Score</h2>
             <div id="score">--</div>
             <p class="small">
@@ -248,7 +210,7 @@
 
                 <div class="row">
                     <span class="label">CPU cores:</span>
-                    <spam class="value" id="cores">waiting...</spam>
+                    <span class="value" id="cores">waiting...</span>
                 </div>
 
                 <div class="row">
@@ -268,7 +230,7 @@
 
                 <div class="row">
                     <span class="label">Public IP:</span>
-                    <span class="vale danger" id="ip">waiting...</span>
+                    <span class="value danger" id="ip">waiting...</span>
                 </div>
             </div>
 
@@ -304,13 +266,13 @@
         </section>
 
         <section class="card">
-            <h2>How to Project Yourself</h2>
+            <h2>How to Protect Yourself</h2>
             <ul>
                 <li>
                     <strong>Use a privacy-focused browser:</strong>
                     Firefox with strick tracking protection or Brave can reduce a lot of tracking.
             </li>
-            </li>
+            <li>
                <strong>Install uBlock Origin:</strong>
                This blocks many ads, trackers, and suspicius scripts before they load.
         </li>
@@ -360,7 +322,7 @@
 
     <script>
         let scanBtn = document.getElementById("btnScan");
-        // console.log("boton cargado"), scanBtn); // debug
+        // console.log("boton cargado", scanBtn); // debug
 
         // helper para hashear el canvas (adaptado de stackoverflow para que sea legible)
         async function crearHash(text) {
@@ -401,7 +363,7 @@
           }
         }
 
-        async function getBaterryStatuts() {
+        async function getBatteryStatus() {
           if (!navigator.getBattery) {
             return "Not supported";
           }
@@ -428,10 +390,92 @@
             ctx.font = "16px Arial";
             ctx.fillStyle = "#d7ff4f";
             ctx.fillText("browser audit", 12, 25);
+            ctx.fillStyle = "rgba(0, 255, 157, 0.7)";
             ctx.fillText("canvas fp text", 14, 45);
             
             let canvasData = canvas.toDataURL();
             return await crearHash(canvasData);
         }
 
-        function calculateRiskScore(data) {}
+        function calculateRiskScore(data) {
+            let score = 0;
+            if (data.ip !== "Blocked or unvailable") score += 30;
+            if (data.cores !== "Hidden") score+= 10;
+            if (data.canvasHash) score += 35;
+            if (data.doNotTrack !== "Enabled") score += 10;
+            if (data.adBlocker === "Not detected") score += 15;
+
+            // maximo 100
+            if (score > 100 ) return 100;
+            return score;
+        }
+
+        function renderScore(score) {
+            let scoreDiv = document.getElementById("score");
+            scoreDiv.textContent = `${score}/100`;
+
+            // cambiar colres segun riesgo
+            if (score >=70) {
+                scoreDiv.style.color = "#ff6b6b"; // rojo
+            } else if (score >= 40) {
+                scoreDiv.style.color = "#f2c94c"; // amarillo
+            } else {
+                scoreDiv.style.color = "#00ff9d"; // verde
+            }
+        }
+
+        function fillDataInHtml(data) {
+            document.getElementById("platform").textContent = data.platform;
+            document.getElementById("cores").textContent = data.cores;
+            document.getElementById("screenSize").textContent = data.screen;
+            document.getElementById("battery").textContent = data.battery;
+            document.getElementById("timezone").textContent = data.timezone;
+            document.getElementById("ip").textContent = data.ip;
+            document.getElementById("dnt").textContent = data.doNotTrack;
+            document.getElementById("adblock").textContent = data.adBlocker;
+
+            // cortar el hash para que no se vea kilometrico
+            let cortado = data.canvasHash.slice(0, 28) + "...";
+            document.getElementById("canvasHash").textContent = cortado;
+
+            // tirar el raw al pre
+            document.getElementById("rawData").textContent = JSON.stringify(data, null, 2);
+        }
+
+        // evento principal del boton
+        scanBtn.addEventListener("click", async () => {
+            console.log("Iniciando auditoria...");
+
+            // bloquear boton para que no le den doble click
+            scanBtn.disabled = true;
+            scanBtn.textContent = "Checking browser...";
+
+            // recolectando toda la info
+            let browserData = {
+                platform: navigator.platform || "Unknown",
+                cores: navigator.hardwareConcurrency || "Hidden",
+                screen: `${screen.width} x ${screen.height}`,
+                battery: await getBatteryStatus(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                ip: await getPublicIp(),
+                doNotTrack: navigator.doNotTrack === "1" ? "Enabled" : "Disabled or ignored",
+                adBlocker: await checkAdBlocker(),
+                canvasHash: await getCanvasFingerprint()
+            };
+
+            console.log("data recolectada:", browserData); // Todo: quitar en producion
+
+            let riskScore = calculateRiskScore(browserData);
+            console.log("Puntaje calculado:", riskScore);
+
+            // pintar en la web
+            renderScore(riskScore);
+            fillDataInHtml(browserData);
+
+            //regresar el boton a la normalidad
+            scanBtn.disabled = false;
+            scanBtn.textContent = "Run again";
+        });
+    </script>
+</body>
+</html> 
